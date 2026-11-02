@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>兴智杯演示 · grid-ir / grid-verify · 20 园区端到端出分（真实界面录制）</title>
+<style>
+  body { font-family: "Noto Sans CJK SC", system-ui, sans-serif; max-width: 1000px;
+         margin: 24px auto; padding: 0 16px; color: #1b1f24; line-height: 1.6; }
+  h1 { font-size: 26px; } h2 { font-size: 20px; margin-top: 32px; }
+  .tag { display: inline-block; background: #ddf4ff; color: #0969da; border: 1px solid #0969da33;
+         border-radius: 6px; padding: 2px 10px; font-size: 13px; margin-right: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { border: 1px solid #d0d7de; padding: 6px 10px; text-align: left; }
+  th { background: #f6f8fa; }
+  .mono { font-family: "DejaVu Sans Mono", monospace; }
+  .ok { color: #1a7f37; font-weight: 600; }
+  .meta td:first-child { width: 140px; background: #f6f8fa; font-weight: 600; }
+  video { width: 100%; border-radius: 8px; background: #000; }
+  .small { color: #57606a; font-size: 13px; }
+  code { background: #f6f8fa; border: 1px solid #d0d7de33; border-radius: 4px;
+          padding: 1px 6px; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>兴智杯演示 · 电力仿真引擎 grid-ir / grid-verify<br>
+<span style="font-size:18px;font-weight:500">20 园区全量档端到端出分 + 一页可视化（真实界面录制）</span></h1>
+<p>
+<span class="tag">真实界面录制</span>
+<span class="tag">合成园区数据</span>
+<span class="tag">口径：full_20</span>
+<span class="tag">门槛 ≥85</span>
+</p>
+
+<h2>演示视频</h2>
+<video controls preload="metadata" src="https://raw.githubusercontent.com/feasy898/grid-ir-grid-verify-demo/main/xingzhibei-demo-20parks.mp4"></video>
+<p class="small">直接下载：<a href="xingzhibei-demo-20parks.mp4">xingzhibei-demo-20parks.mp4</a>
+（1920×1080@30fps，中文字幕烧录，无声；等待段画面加速 10× 并有字幕标注）</p>
+
+<h2>本次实跑口径（与视频画面一致）</h2>
+<table class="meta">
+<tr><td>作品名</td><td>电网仿真系统 GridOS（grid-ir / grid-verify）—— 20 园区全量业务场景端到端评分演示</td></tr>
+<tr><td>生成日期</td><td>2026-11-02T18:55:46+08:00</td></tr>
+<tr><td>口径 / 种子</td><td class="mono">full_20 · seed 100..119（synth_v2 合成园区生成器，可复现）</td></tr>
+<tr><td>git commit</td><td class="mono">ca1240febbacb4175ff0668c4061e556261c0429</td></tr>
+<tr><td>复跑命令</td><td class="mono">cd 电力仿真仓库 &amp;&amp; .venv/bin/python -m bench.scenario_full20 --parks 20</td></tr>
+<tr><td>六场景均分</td><td><span class="ok">100.0</span>（门槛 ≥85；6/6 场景 × 20/20 园区全部达标）</td></tr>
+<tr><td>判定口径</td><td>scenarios/scoring（结构 20 + 物理 40 + 业务 40），门槛同 scenarios/scoring.PASS_THRESHOLD</td></tr>
+</table>
+
+<h2>六场景明细（本次实测耗时）</h2>
+<table>
+<tr><th>场景</th><th>template</th><th>内容</th><th>均分</th><th>达标</th><th>耗时</th></tr>
+<tr><td>碳排画像</td><td class='mono'>carbon_profile</td><td>小时级碳排曲线 · 园区碳强度 · 绿电占比</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>46.12s</td></tr>
+<tr><td>绿电直连</td><td class='mono'>direct_ppt</td><td>园区 PV 消纳统计 + 直连通道 N-1 失电与反送评估</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>34.23s</td></tr>
+<tr><td>电能质量</td><td class='mono'>power_quality</td><td>电压偏差 GB/T 12325 + 三相不平衡度 GB/T 15543</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>1.15s</td></tr>
+<tr><td>源网荷储</td><td class='mono'>storage_sizing</td><td>储能容量扫描 · 消纳率与购电成本曲线 · 容量推荐</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>172.93s</td></tr>
+<tr><td>供电安全</td><td class='mono'>supply_security</td><td>N-1 全扫 + 越限统计 + 转供预案</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>40.63s</td></tr>
+<tr><td>虚拟电厂</td><td class='mono'>vpp</td><td>聚合储能+PV 等效容量 · 三档申报 what-if 与欠履约风险</td><td class='ok'>100.0</td><td>20/20</td><td class='mono'>17.16s</td></tr>
+</table>
+
+<h2>录屏内还包含：O1 守恒校验拦截演示（5 母线 / 6 支路）</h2>
+<p>一次潮流原语调用后 O1 自动挂载：KCL 有功残差 <code>5.116e-15 pu</code> ·
+无功残差 <code>5.642e-14 pu</code> · 功率平衡 <code>-5.969e-15 pu</code> ·
+violations 0（passed=True）；<br>
+内存内注入 0.01 MW 漂移后 passed=False，命中
+<code>O1_BOOKKEEPING_P / O1_KCL_P / O1_POWER_BALANCE</code>
+（3 条，定位 bus[0]，偏差 1.000e-04 pu）。</p>
+
+<h2>边界声明</h2>
+<p class="small">① 数据全部为合成园区（synth_v2 seed 100..119），不含任何真实电网企业名与真实量测数据；
+② 分值由 bench.scorecard.probes.scenario_bench 实跑产出，未经人工修改，判定只看 scenarios/scoring 的总分 ≥85；
+③ 合成园区在当前判据下区分度有限（本次六场景均为 100.0），演示重在跑通与可复现，不宣称覆盖各种边界情形；
+④ 视频为真实界面录屏：终端实跑命令、浏览器实开页面；约 5 分钟的基准等待段以 10× 加速呈现并有字幕标注，其余段落原速。</p>
+</body>
+</html>
